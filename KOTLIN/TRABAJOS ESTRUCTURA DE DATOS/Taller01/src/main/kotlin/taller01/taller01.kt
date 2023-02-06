@@ -97,24 +97,43 @@ fun ejercicio11(n: Int, m: Int, k: Int): Pair<Int, Int> {
 fun ejercicio12(nombreHermano1: String, edadHermano1: Int,
                 nombreHermano2: String, edadHermano2: Int,
                 nombreHermano3: String, edadHermano3: Int): String {
-    if (edadHermano1>edadHermano2 and edadHermano3){
-        return (nombreHermano1)
-
-    } else if (edadHermano2>edadHermano1 and edadHermano3){
-        return (nombreHermano2)
-    } else if (edadHermano3>edadHermano1 and edadHermano2){
-        return (nombreHermano3)
+   var nombress=""
+    if (edadHermano1>edadHermano2 && edadHermano1>edadHermano3){
+         nombress=nombreHermano1
     }
-
-    return TODO("Provide the return value")
+    if (edadHermano2>edadHermano1 && edadHermano2>edadHermano3){
+        nombress=nombreHermano2
+    }
+    if (edadHermano3>edadHermano1 && edadHermano2>edadHermano2){
+        nombress=nombreHermano3
+    }
+    
+    return (nombress)
 }
 
 /* Ejercicio 13 */
 fun ejercicio13(salario: Double): Pair<Double, Double> {
-    TODO("Completar el ejercicio 13")
+    var aumento:Double=0.0
+    var salarionuevo:Double=0.0
+    if (salario<800_000){
+        aumento=salario*0.1
+        salarionuevo=aumento+salario
+    } else if (salario>800_000 && salario<1200_000){
+        aumento=salario*0.08
+        salarionuevo=aumento+salario
+    }else if (salario>1200_000){
+        aumento=salario*0.05
+        salarionuevo=aumento+salario
+    }
+    return Pair(aumento,salarionuevo)
+
 }
 
 /* Ejercicio 14 */
 fun ejercicio14(año: Int): Boolean {
-    TODO("Completar el ejercicio 14")
+    if ((año%4==0)&&(año%100!=0||año%400==0)){
+      return true
+    }else {
+        return false
+    }
 }
