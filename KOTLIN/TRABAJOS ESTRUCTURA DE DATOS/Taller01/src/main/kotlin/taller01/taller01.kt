@@ -7,6 +7,7 @@
  * Fecha: 1 de febrero de 2023
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
+//dakdjaidasodjasopdoadoasodasiodaimdoamooidaiod
 package taller01
 
 import kotlin.math.*
