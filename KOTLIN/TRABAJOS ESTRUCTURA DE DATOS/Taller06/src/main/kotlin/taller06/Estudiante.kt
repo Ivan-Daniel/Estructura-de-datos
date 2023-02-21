@@ -107,9 +107,14 @@ class Estudiante(
      */
     fun ejercicio07(carrera: String): Int {
         var sumacreditos=0
+        /*
         for (curso in this.cursos){
             if (curso.carrera==carrera && curso.estaCalificado() && curso.aproboCurso())sumacreditos+=curso.creditos
                  }
+        return sumacreditos*/
+        cursos.forEach{
+            if (it.carrera==carrera && it.estaCalificado()&& it.aproboCurso())sumacreditos+=it.creditos
+        }
         return sumacreditos
     }
 
