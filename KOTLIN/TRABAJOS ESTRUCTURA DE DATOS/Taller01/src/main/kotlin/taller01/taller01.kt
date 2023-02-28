@@ -86,10 +86,9 @@ fun ejercicio10(r: Double, R: Double): Double {
 
 /* Ejercicio 11 */
 fun ejercicio11(n: Int, m: Int, k: Int): Pair<Int, Int> {
-    var tempre= m*n
-    var calif= tempre*k
+    var calif= m*n*k
     var horas= calif/60
-    var minutos= calif%60
+    var minutos= calif%60 //El modulo es el residuo de la division
     return Pair(horas,minutos)
 
 }
