@@ -47,7 +47,7 @@ fun ejercicio04(base: Double, altura: Double): Pair<Double, Double> {//Esta es o
 /* Ejercicio 05 */
 fun ejercicio05(gordos: Int, flacos: Int, numSillasBus: Int): Int {
     var s= gordos*2
-    return ceil((s+flacos)/numSillasBus.toDouble()).toInt()
+    return ceil((s+flacos)/numSillasBus.toDouble()).toInt()//El ceil lo que hace es redondear el numero pero en el siguiente numero tienes que convertirlo en double
 }
 
 /* Ejercicio 06 */
