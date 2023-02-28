@@ -80,7 +80,7 @@ fun ejercicio09(r: Double): Double {
 
 /* Ejercicio 10 */
 fun ejercicio10(r: Double, R: Double): Double {
-    return (PI*R.pow(2)-PI*r.pow(2))
+    return (ejercicio09(R)- ejercicio09(r))
 
 }
 
