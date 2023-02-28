@@ -31,7 +31,7 @@ fun ejercicio02(metros: Double): Double {
 
 /* Ejercicio 03 */
 fun ejercicio03(x: Double, y: Double): Double {
-    return (Math.pow(x.toDouble(),2.0)+2*x*y+Math.pow(y.toDouble(),2.0))
+    return (Math.pow(x.toDouble(),2.0)+2*x*y+y.pow(2.0))
 }
 
 /* Ejercicio 04 */
