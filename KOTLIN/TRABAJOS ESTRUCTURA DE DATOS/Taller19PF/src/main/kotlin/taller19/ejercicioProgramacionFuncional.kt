@@ -1,7 +1,7 @@
 package taller19
 
 import ean.colecciones.Lista
-import kotlin.math.pow
+import ean.colecciones.listaVacia
 import kotlin.math.sqrt
 
 
@@ -48,19 +48,18 @@ data class Triangulo(val id: Int,
  * Si la lista está vacía, retorne null
  */
 fun metodo6(dptos: Lista<Departamento>): String? {
-    val anti = dptos.encontrarMenor { it.añoCreacion }
-    val tras = anti?.nombre
-    return tras
+    val depAnt = dptos.encontrarMenor { it.añoCreacion }
+    return depAnt?.nombre
 }
+
 /**
  * Retorna el  departamento que tiene la superficie más grande
  * pero con una población superior a la población que se pasa
  * como parámetro.
  */
 fun metodo7(dptos: Lista<Departamento>, poblacion: Int): Departamento? {
-    val filt = dptos.filtrar { it.poblacion>poblacion }
-    val tranS = filt.encontrarMayor { it.superficie }
-    return tranS
+    val depFilt = dptos.filtrar { it.poblacion > poblacion }
+    return depFilt.encontrarMayor { it.superficie }
 }
 
 /**
@@ -68,49 +67,61 @@ fun metodo7(dptos: Lista<Departamento>, poblacion: Int): Departamento? {
  * en el siglo XX y que tenga un IDH entre 0.85 y 0.95
  */
 fun metodo8(dptos: Lista<Departamento>): Lista<String> {
-    val enco = dptos.filtrar{ it.añoCreacion in 1900 until 1999 && it.IDH in 0.85 .. 0.95  }
-    val dep  = enco.transformar { it.nombre }
-    return dep
+    val depFilt = dptos.filtrar { it.añoCreacion in 1900..1999 && it.IDH in 0.85..0.95 }
+    return depFilt.transformar { it.nombre }
 }
+
 /**
  * Retorne el porcentaje de departamentos de la lista cuya densidad
  * esté por debajo del valor que se pasa como parámetro
  */
 fun metodo9(deptos: Lista<Departamento>, valor: Double): Double {
-    val filtro = deptos.filtrar { it.densidad<valor }
-    return (filtro.tam.toDouble()/deptos.tam)*100
+    val depCumplen = deptos.contar { it.densidad < valor }
+    val porc = (depCumplen.toDouble() / deptos.tam) * 100.0
+    return porc
 }
+
 /**
  * Retorne el promedio de superficie de los departamentos de la lista
  * cuya poblacion sea superior a la población del departamento con menor
  * IDH de toda la lista
  */
 fun metodo10(deptos: Lista<Departamento>): Double {
-    val menoridh = deptos.encontrarMenor { it.IDH }
-    val menor = menoridh?.poblacion
-    val filtro = deptos.filtrar { it.poblacion> menor!! }
-    val total =   filtro.sumar (fun (d:Departamento):Double=d.superficie)
-    return total/filtro.tam
+    val depMenorIDH = deptos.encontrarMenor { it.IDH }  //dep con menor idh
+    val pobMinIDH = depMenorIDH?.poblacion ?: 0         // poblacion min desde 0
+    val deptosFilt = deptos.filtrar { it.poblacion > pobMinIDH }        //filtran los deptos de la lista que tienen una población mayor a la población mínima encontrada
+    val oper: (Departamento) ->  Double = { it.superficie }
+    val sumSup = deptosFilt.sumar(oper)
+    val cantDepFilt = deptosFilt.tam
+
+    if (cantDepFilt == 0) {        //si la cantidad filtrada es 0 return 0.0
+        return 0.0
+    }
+
+    return sumSup / cantDepFilt       //suma de superficies div en cantidd e deptos filtrados
 }
 
 //-------------------------------------------------------------------
 // Operaciones con la clase Municipio
 //-------------------------------------------------------------------
+
 /**
  * Determinar y retornar cuántos municipios de la lista son capitales
  */
 fun metodo11(muns: Lista<Municipio>): Int {
-   return muns.contar { it.esCapital }
+    return muns.contar { it.esCapital }
 }
+
 /**
  * Determinar el nombre del municipio que no es capital y que pertenece al
  * departamento que se recibe como parámetro y que tiene la población urbana
  * más grande
  */
 fun metodo12(m: Lista<Municipio>, depto: String): String {
-    val dept = m.filtrar { it.departamento == depto && !it.esCapital }
-    val nomb = dept.encontrarMayor { it.poblacionUrbana }!!.nombre
-    return nomb
+    val munFilt = m.filtrar { it.departamento == depto && !it.esCapital }
+    val munMayorPob = munFilt.encontrarMayor { it.poblacionUrbana }
+
+    return munMayorPob?.nombre ?: ""
 }
 
 /**
@@ -119,18 +130,22 @@ fun metodo12(m: Lista<Municipio>, depto: String): String {
  * como parámetro y cuyo código sea múltiplo de 3 o de 5
  */
 fun metodo13(municipios: Lista<Municipio>, departamento: String): Double {
-    val filtro = municipios.filtrar { it.departamento == departamento && (it.codigo %3 ==0 || it.codigo%5==0) }
-    val total =   filtro.sumar (fun (m:Municipio):Int=m.poblacionRural+m.poblacionUrbana)
-    return total/filtro.tam.toDouble()
-
+    // se filtra por municipios que pertenecen al departamento que se pasa
+    // como parámetro y cuyo código sea múltiplo de 3 o de 5
+    val munFilt = municipios.filtrar { it.departamento == departamento && (it.codigo % 3 == 0 || it.codigo % 5 == 0) }
+    //suma de la población rural y población urbana junto al filtro de municipios
+    val oper: (Municipio) -> Double = {it.poblacionRural.toDouble() + it.poblacionUrbana }
+    val sum =munFilt.sumar(oper)
+    //se saca el promedio
+    return sum/ munFilt.tam
 }
 
 /**
  * Retorne el nombre del primer municipio que inicia con J en toda la lista
  */
 fun metodo14(muns: Lista<Municipio>): String {
-    val fil  = muns.encontrarElPrimeroQueCumple { it.nombre.startsWith("J") }
-    return fil!!.nombre
+    val munConJ = muns.encontrarElPrimeroQueCumple { it.nombre.startsWith("J") }
+    return munConJ?.nombre ?: ""
 }
 
 
@@ -139,9 +154,8 @@ fun metodo14(muns: Lista<Municipio>): String {
  * de 4 dígitos poseen una poblacion rural superior a la población
  * urbana
  */
-fun metodo15(muns: Lista<Municipio>): Int {
-    return muns.contar { it.codigo in 1000..9999 && it.poblacionRural > it.poblacionUrbana }
-
+fun metodo15( muns: Lista<Municipio>): Int {
+    return muns.contar { it.codigo in 1000..9999 && it.poblacionRural > it.poblacionUrbana }             //NO USAR .LENGTH
 }
 
 //-------------------------------------------------------------------
@@ -151,9 +165,9 @@ fun metodo15(muns: Lista<Municipio>): Int {
 /**
  * Obtener el nombre de todos los productos cuyo código es par
  */
-fun metodo1(productos: Lista<Producto>): Lista<String> {
-    val lista1 = productos.filtrar { it.codigo % 2 == 0 }
-    return lista1.transformar { it.nombre }
+fun metodo1(productos: Lista<Producto>): Lista<String> {        /// TRATAR DE NO USAR FOR NI WHILE
+    val list1 = productos.filtrar { it.codigo % 2 == 0 }
+    return list1.transformar { it.nombre }
 }
 
 /**
@@ -161,8 +175,8 @@ fun metodo1(productos: Lista<Producto>): Lista<String> {
  * cuyo código se pasa como parámetro
  */
 fun metodo2(productos: Lista<Producto>, codProducto: Int): Int {
-    val prod = productos.encontrarElPrimeroQueCumple { it.codigo==codProducto }
-    return productos.filtrar { it.precio<prod!!.precio }.tam
+    val prod = productos.encontrarElPrimeroQueCumple { it.codigo == codProducto }
+    return productos.contar { it.precio < prod!!.precio }
 }
 
 /**
@@ -171,10 +185,9 @@ fun metodo2(productos: Lista<Producto>, codProducto: Int): Int {
  * esté entre mil y diez mil pesos.
  *
  */
-fun metodo3(productos: Lista<Producto>, cantidadMinima: Int): Lista<Int> {
-    var lista = productos.filtrar { it.cantidad > cantidadMinima && it.precio in 1000..10000 }
-    return lista.transformar { it.codigo }
-}
+fun metodo3(productos: Lista<Producto>, cantidadMinima: Int): Lista<Int> =
+     productos.filtrar { it.precio in 1000 .. 10000 && it.cantidad > cantidadMinima}
+         .transformar { it.codigo }
 
 /**
  * EL inventario total de la lista es la suma de la multiplicación de la cantidad por el precio
@@ -182,23 +195,29 @@ fun metodo3(productos: Lista<Producto>, cantidadMinima: Int): Lista<Int> {
  * inventario de la lista es superior al millón de pesos o no.
  */
 fun metodo4(prods: Lista<Producto>): Boolean {
-    val inventario = prods.transformar { it.precio* it.cantidad }
-    val criterio: (Int)->Int= {it}
-    val sumar = inventario.sumar ( criterio )
-    println (sumar)
-    return sumar >1_000_000
+    val inv =prods.transformar { it.precio * it.cantidad }
+    val criterio: (Int) -> Int ={it}
+    val sum = inv.sumar(criterio)
+    return sum > 1_000_000
 }
+
 
 /**
  * Obtener el promedio de la cantidad de aquellos productos cuyo precio
  * esté por debajo del promedio de precio de todos los productos de la lista
  */
-fun metodo5(prods: Lista<Producto>): Double {
-    val sumaPrecios= prods.sumar (fun (p:Producto):Int=p.precio)
-    val prom = sumaPrecios/prods.tam.toDouble()
-    val prodsCantprecdebajoProm = prods.filtrar { it.precio<prom }
-    val sumaCantidades = prodsCantprecdebajoProm.sumar (fun(p:Producto):Int=p.cantidad).toDouble()
-    return sumaCantidades/prodsCantprecdebajoProm.tam
+fun metodo5(prods: Lista<Producto>): Double { // sacar promedió 2 veces
+
+    val sumaPrecios= prods.sumar (fun(p:Producto):Int = p.precio) //Aqui se hace la suma de todos los presios de la lista de productos
+
+    val prom=sumaPrecios/prods.tam.toDouble()//Aqui se halla el promedio de la lista de prods
+
+    // pero que estos elementos sean menor que el promedio
+    val prodsCantPrecDebajoProm= prods.filtrar { it.precio<prom }
+
+    val sumaCantidades= prodsCantPrecDebajoProm.sumar (fun (p:Producto):Int= p.cantidad).toDouble()//Aqui se suman las CANTIDADES que es lo que se pide
+
+    return sumaCantidades/prodsCantPrecDebajoProm.tam//Aqui se retorna el promedio de las cantidades
 }
 
 //-------------------------------------------------------------------
@@ -209,25 +228,26 @@ fun metodo5(prods: Lista<Producto>): Double {
  * Retorna el número de rectángulos que también son cuadrados
  */
 fun metodo16(rects: Lista<Rectangulo>): Int {
-    val cuad = rects.filtrar { it.altura == it.base }
-    return cuad.tam
+    return rects.contar { it.base == it.altura }
 }
 
 /**
  * Obtiene el promedio del área de los rectángulos cuya base es inferior a su altura
  */
 fun metodo17(rects: Lista<Rectangulo>): Double {
-    val x =rects.filtrar { it.base<it.altura }
-    val suma = x.sumar (fun(r:Rectangulo):Double=r.area())
-    return suma/x.tam
+    val rectFilt = rects.filtrar { it.base < it.altura }   // filtra rectángulos que base es inferior a su altura
+    val oper: (Rectangulo) -> Double = {it.area() }        // se suma de acuerdo a su area
+    val sum =rectFilt.sumar(oper)
+    val cant = rectFilt.tam                                // cantidad de rect filtrados
+
+    return sum / cant                                      // se hace el promedio con la suma y la cantidad
 }
 
 /**
  * Obtiene el rectángulo de mayor área de la lsita
  */
-fun metodo18(rects: Lista<Rectangulo>): Rectangulo {
-    val areamay = rects.encontrarMayor { it.base * it.altura }
-    return areamay!!
+fun metodo18(rects: Lista<Rectangulo>): Rectangulo? {
+    return rects.encontrarMayor { it.area() }
 }
 
 /**
@@ -235,35 +255,42 @@ fun metodo18(rects: Lista<Rectangulo>): Rectangulo {
  * superior al área que se pasa como parámetros
  */
 fun metodo19(rects: Lista<Rectangulo>, areaMin: Double): Lista<Double> {
-    val x =rects.filtrar { it.area()>areaMin }
-    return x.transformar { sqrt(it.altura.pow(2)+it.base.pow(2)) }
+    return rects.filtrar { it.base == it.altura && it.area() > areaMin }
+        .transformar { sqrt(2.0) * it.base }
 }
 
 /**
  * Halla la hipotenusa del triángulo rectángulo que tiene los catetos a y b
  */
-fun hypot(a: Double, b: Double): Double = sqrt(a.pow(2)+b.pow(2))
+fun hypot(a: Double, b: Double): Double = sqrt(a * a + b * b)
 
 /**
  * Un triangulo es rectangulo si un lado (el mas largo) es igual a la raiz cuadrada de
  * la suma de los cuadrados de los otros dos lados
  */
 fun esRectangulo(t: Triangulo): Boolean {
-    if(sqrt(t.lado1.pow(2)+t.lado2.pow(2))==t.lado3 && (t.lado3>t.lado1 && t.lado3>t.lado2)){
-        return true
+    val ladoMax = maxOf(t.lado1, t.lado2, t.lado3)
+
+    val sumCua = when (ladoMax) {
+        t.lado1 -> t.lado2 * t.lado2 + t.lado3 * t.lado3
+        t.lado2 -> t.lado1 * t.lado1 + t.lado3 * t.lado3
+        else -> t.lado1 * t.lado1 + t.lado2 * t.lado2
     }
-    else if(sqrt(t.lado1.pow(2)+t.lado3.pow(2))==t.lado2 && (t.lado2>t.lado1 && t.lado2>t.lado3)){
-        return true
-    }
-    else return sqrt(t.lado3.pow(2)+t.lado2.pow(2))==t.lado1 && (t.lado1>t.lado3 && t.lado1>t.lado2)
+
+    return ladoMax == sqrt(sumCua)
 }
 
 /**
  * Hallar el área del triángulo que se pasa como parámetro
  */
 fun areaTriangulo(t: Triangulo): Double {
-   val s = (t.lado1+t.lado2+t.lado3)/2
-    return sqrt( s*((s-t.lado1)*(s-t.lado2)*(s-t.lado3)))
+    val a = t.lado1
+    val b = t.lado2
+    val c = t.lado3
+
+    val s = (a + b + c) / 2.0 // Semiperimetro
+
+    return sqrt(s * (s - a) * (s - b) * (s - c)) // Fórmula de Herón
 }
 
 /**
@@ -277,9 +304,8 @@ fun metodo20(triangulos: Lista<Triangulo>): Lista<Double> {
  * Obtiene la lista de los identificadores de aquellos triángulos isosceles cuya área no supera a 10
  */
 fun metodo21(triangulos: Lista<Triangulo>): Lista<Int> {
-    return triangulos.filtrar { it.lado3==it.lado1 || it.lado3==it.lado2 || it.lado1==it.lado2}.filtrar {
-        areaTriangulo(it)<10}.transformar { it.id }
+    val triIso = triangulos.filtrar { it.lado1 == it.lado2 || it.lado1 == it.lado3 || it.lado2 == it.lado3}       // se filtran triangulos isoceles
+        .filtrar { areaTriangulo(it) < 10}                                                                        // de los mismos se filtran que el area no supere a 10
+
+    return triIso.transformar { it.id }                                                                           // se obtiene la lista de identificadores con esas cond.
 }
-
-
-

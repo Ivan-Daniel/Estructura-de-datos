@@ -277,11 +277,12 @@ class EjercicioProgramacionFuncionalTest {
     @Test
     fun pruebaMetodo19() {
         val lr = configurarRectangulos()
-        val res = metodo19(lr, 100.0).ordenar { it }
+        val res = metodo19(lr, 10.0).ordenar { it }
 
-        assertEquals(2, res.tam)
-        assertEquals(23.2002155, res[0], 1e-7)
-        assertEquals(23.3238, res[1], 1e-4)
+        assertEquals(3, res.tam)
+        assertEquals(7.0710, res[0], 1e-4)
+        assertEquals(8.4852, res[1], 1e-4)
+        assertEquals(14.142, res[2], 1e-3)
         println("Prueba superada!!!")
     }
 
