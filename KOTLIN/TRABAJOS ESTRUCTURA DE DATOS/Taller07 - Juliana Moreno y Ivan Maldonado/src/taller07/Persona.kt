@@ -40,9 +40,9 @@ data class Persona(
      * multiplicado por el estrato
      */
     fun impuesto(): Double {
-        return when (estrato) {
+        return when (estrato){
             1,2 -> ingresos*0.05
-            else -> (ingresos/10.0) + 10_000*estrato
+            else -> (ingresos/10.0)+10_000 * estrato
         }
     }
 }
@@ -267,8 +267,7 @@ fun ejercicio05(personas: List<Persona>): List<Int> {
     var resultado = mutableListOf<Int>()
 
     for (p in personas) {
-        if (p.genero == "F" && !p.tieneCasa && p.hijos == 0  &&
-            nivelPeso(p) == "Normal"){
+        if (p.genero == "F" && !p.tieneCasa && p.hijos == 0  && nivelPeso(p) == "Normal"){
             resultado.add(p.cedula)
         }
     }
